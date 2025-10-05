@@ -52,15 +52,35 @@ const Manager = () => {
 
     const savePassword = async () => {
         if (form.site.length > 3 && form.username.length > 3 && form.password.length > 3) {
+            let newPassword;
+            // If the form has an ID, it's an edit
+            if (form.id) {
+                // Find the existing password and update it
+                const updatedPasswordArray = passwordArray.map(p => (p.id === form.id ? form : p));
+                setPasswordArray(updatedPasswordArray);
 
-            // If any such id exists in the db, delete it 
-            await fetch("http://localhost:3000/", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id: form.id }) })
+                // Send a DELETE request for the old record
+                await fetch("http://localhost:3000/", {
+                    method: "DELETE",
+                    headers: { "Content-Type": "application/json" },
+                    body: JSON.stringify({ id: form.id }),
+                });
+                newPassword = { ...form }; // Use the existing form data for the POST request
+            } else {
+                // It's a new password
+                newPassword = { ...form, id: uuidv4() };
+                setPasswordArray([...passwordArray, newPassword]);
+            }
 
-            setPasswordArray([...passwordArray, { ...form, id: uuidv4() }])
-            await fetch("http://localhost:3000/", { method: "POST", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ ...form, id: uuidv4() }) })
+            // Save the new or updated password to the database
+            await fetch("http://localhost:3000/", {
+                method: "POST",
+                headers: { "Content-Type": "application/json" },
+                body: JSON.stringify(newPassword),
+            });
 
-            // Otherwise clear the form and show toast
-            setform({ site: "", username: "", password: "" })
+            // Clear the form and show toast
+            setform({ site: "", username: "", password: "" });
             toast('Password saved!', {
                 position: "top-right",
                 autoClose: 5000,
@@ -71,12 +91,10 @@ const Manager = () => {
                 progress: undefined,
                 theme: "dark",
             });
-        }
-        else {
+        } else {
             toast('Error: Password not saved!');
         }
-
-    }
+    };
 
     const deletePassword = async (id) => {
         console.log("Deleting password with id ", id)
