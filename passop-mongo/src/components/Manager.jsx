@@ -11,7 +11,7 @@ const Manager = () => {
     const [passwordArray, setPasswordArray] = useState([])
 
     const getPasswords = async () => {
-        let req = await fetch("http://localhost:3000/")
+        let req = await fetch("https://password-manager-backend-9cja.onrender.com/")
         let passwords = await req.json()
         setPasswordArray(passwords)
     }
@@ -60,7 +60,7 @@ const Manager = () => {
                 setPasswordArray(updatedPasswordArray);
 
                 // Send a DELETE request for the old record
-                await fetch("http://localhost:3000/", {
+                await fetch("https://password-manager-backend-9cja.onrender.com/", {
                     method: "DELETE",
                     headers: { "Content-Type": "application/json" },
                     body: JSON.stringify({ id: form.id }),
@@ -73,7 +73,7 @@ const Manager = () => {
             }
 
             // Save the new or updated password to the database
-            await fetch("http://localhost:3000/", {
+            await fetch("https://password-manager-backend-9cja.onrender.com/", {
                 method: "POST",
                 headers: { "Content-Type": "application/json" },
                 body: JSON.stringify(newPassword),
@@ -102,7 +102,7 @@ const Manager = () => {
         if (c) {
             setPasswordArray(passwordArray.filter(item => item.id !== id))
             
-            await fetch("http://localhost:3000/", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) })
+            await fetch("https://password-manager-backend-9cja.onrender.com/", { method: "DELETE", headers: { "Content-Type": "application/json" }, body: JSON.stringify({ id }) })
 
             toast('Password Deleted!', {
                 position: "top-right",
